@@ -82,21 +82,17 @@ class ViewController: UIViewController, UITextFieldDelegate, UITableViewDelegate
         songs.removeAll(keepCapacity: false)
         
         
-        let collections = query.collections
-        for collection in collections as! [MPMediaItemCollection] {
-            for item in collection.items as! [MPMediaItem] {
-                let title = item.title != nil ? item.title : ""
-                let album = item.albumTitle != nil ? item.albumTitle : ""
-                let song = Song(title: title, album: album)
-                songs.append(song)
+        if let collections = query.collections {
+            for collection in collections {
+                for item in collection.items {
+                    let title: String = item.title != nil ? item.title! : ""
+                    let album: String = item.albumTitle != nil ? item.albumTitle! : ""
+                    let song = Song(title: title, album: album)
+                    songs.append(song)
+                }
             }
         }
     }
-    
-    
-
-    
-    
     
 
 
@@ -107,13 +103,13 @@ class ViewController: UIViewController, UITextFieldDelegate, UITableViewDelegate
         }
         
         // textを取得
-        let artistText = artistField.text
-        if artistText == nil {
+        let artistText: String = artistField.text != nil ? artistField.text! : ""
+        if artistText == "" {
             return
         }
         
         // 非同期でアーティスト名で絞り込む
-        dispatch_async(dispatch_get_global_queue(Int(QOS_CLASS_USER_INITIATED.value), 0)) {
+        dispatch_async(dispatch_get_global_queue(Int(QOS_CLASS_USER_INITIATED.rawValue), 0)) {
             // アーティスト名で絞り込み
             let query = self.filteredArtistQuery(artistText)
             // プレイヤーに絞り込んだqueryを与える
@@ -161,7 +157,7 @@ class ViewController: UIViewController, UITextFieldDelegate, UITableViewDelegate
     // MARK: Table View
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         // indexPathが示すセルを取得
-        let cell = tableView.dequeueReusableCellWithIdentifier(kCellIdentifier, forIndexPath: indexPath) as! UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier(kCellIdentifier, forIndexPath: indexPath) 
         
         // セルを更新
         let song = songs[indexPath.row]
